@@ -126,8 +126,32 @@ public:
 		rotation = { 0.0f, 37.5f, 0.0f };
 		enableTextOverlay = true;
 		title = "Vulkan Example - Multi threaded rendering";
-		// Get number of max. concurrrent threads
-		numThreads = std::thread::hardware_concurrency();
+
+		{ // Get number of max.||req. concurrrent threads
+      signed reqThreads(std::max(unsigned(1), std::thread::hardware_concurrency()));
+
+      for (size_t i = 0; i < args.size(); ++i) {
+        if (std::string("-thr") == args[i]) {
+          char* endptr;
+
+          reqThreads = strtol(args[i+1], &endptr, 10);
+          
+          if (endptr != args[i+1]) { 
+            if (1 > reqThreads) {
+              std::cerr << "Enforcing minimum thread count of 1" << std::endl;
+              reqThreads = 1;
+            } else {
+              std::cout << "Requested thread count = " << reqThreads << std::endl;
+            }
+          }
+          
+          break;
+        }
+      }
+
+      numThreads = reqThreads;
+    }
+        
 		assert(numThreads > 0);
 #if defined(__ANDROID__)
 		LOGD("numThreads = %d", numThreads);
