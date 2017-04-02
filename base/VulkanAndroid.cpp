@@ -6,7 +6,7 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 */
 
-#include "vulkanandroid.h"
+#include "VulkanAndroid.h"
 
 #if defined(__ANDROID__)
 	#include <android/log.h>
@@ -118,6 +118,8 @@ PFN_vkCmdCopyQueryPoolResults vkCmdCopyQueryPoolResults;
 
 PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR;
 PFN_vkDestroySurfaceKHR vkDestroySurfaceKHR;
+
+int32_t vks::android::screenDensity;
 
 void *libVulkan;
 
@@ -282,13 +284,13 @@ namespace vks
 			dlclose(libVulkan);
 		}
 
-		int32_t getScreenDensity()
+		void getDeviceConfig()
 		{
+			// Screen density
 			AConfiguration* config = AConfiguration_new();
 			AConfiguration_fromAssetManager(config, androidApp->activity->assetManager);
-			int32_t density = AConfiguration_getDensity(config);
+			vks::android::screenDensity = AConfiguration_getDensity(config);
 			AConfiguration_delete(config);
-			return density;
 		}
 	}
 }
